@@ -4,6 +4,10 @@ on: [push]
 
 env:
   RECORDS: ${{ secrets.RECORDS }}
+  API_TOKEN: ${{ secrets.API_TOKEN }}
+  DOMAIN: ${{ secrets.DOMAIN }}
+  ZONE_ID: ${{ secrets.ZONE_ID }}
+
 
 jobs:
   build:
