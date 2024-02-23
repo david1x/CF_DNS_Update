@@ -24,7 +24,7 @@ dns_records = os.getenv("RECORDS").split(" ")
 
 
 def set_env_variable(name, value):
-    with open('/etc/environment', 'a') as env_file:
+    with open('/etc/environment', 'w') as env_file:
         env_file.write(f'{name}={value}\n')
 
 def get_public_ip():
