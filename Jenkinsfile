@@ -36,7 +36,7 @@ pipeline {
             steps {
                     script {
                         // Use double quotes to interpolate variables
-                        sh "source /etc/environment && python3 main.py"
+                        sh "python3 main.py"
                     }
             }
         }
