@@ -12,27 +12,33 @@ env:
 jobs:
   build:
     runs-on: deepin
+    
     steps:
       - name: Check out repository code
+        working-directory: /home/deepin/actions/work_CF
         uses: actions/checkout@v3
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v3
-      #   with:
-      #     python-version: '3.7.3'
+      - name: PWD
+        working-directory: /home/deepin/actions/work_CF
+        run: |
+          pwd
 
       - name: Install pip dependencies
+        working-directory: /home/deepin/actions/work_CF
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Create Virtual Environment
+        working-directory: /home/deepin/actions/work_CF
         run: |
           python3 -m venv venv
           source venv/bin/activate
 
       - name: Run Python script
+        working-directory: /home/deepin/actions/work_CF
         run: python3 main.py
 
       - name: Clean up
+        working-directory: /home/deepin/actions/work_CF
         run: rm -rf venv
