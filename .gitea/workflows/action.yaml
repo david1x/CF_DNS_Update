@@ -1,6 +1,6 @@
-on:
-  schedule:
-    - cron: '20 11,14,18 * * *'
+name: Gitea Actions
+run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+on: [push]
 
 jobs:
   build:
