@@ -10,7 +10,7 @@ pipeline {
     }
 
     stages {
-
+        
         stage('Create Virtual Environment') {
             steps {
                 script {
@@ -36,7 +36,7 @@ pipeline {
             steps {
                     script {
                         // Use double quotes to interpolate variables
-                        sh "python3 main.py"
+                        sh "source /etc/environment && python3 main.py"
                     }
             }
         }
