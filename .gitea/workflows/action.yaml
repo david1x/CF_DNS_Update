@@ -2,6 +2,9 @@ name: Gitea Actions
 run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
 on: [push]
 
+env:
+  RECORDS: ${{ secrets.RECORDS }}
+
 jobs:
   build:
     runs-on: deepin
