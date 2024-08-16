@@ -96,9 +96,10 @@ def main():
     try:
         t1_start = time.perf_counter()
         public_ip = get_public_ip()
-        set_env_variable('PUBLIC_IP', public_ip)
+        # set_env_variable('PUBLIC_IP', public_ip)
         
         if ip_changed(public_ip):
+            set_env_variable('PUBLIC_IP', public_ip)
             t2_start = time.perf_counter()
             with open("ip.txt", "w") as ip_file:
                 ip_file.write(public_ip)
