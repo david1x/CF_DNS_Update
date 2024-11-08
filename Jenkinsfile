@@ -26,7 +26,7 @@ pipeline {
                         // Activate the virtual environment
                         sh '. venv/bin/activate'
 
-                        sh 'echo env | pwd'
+                        sh 'env | pwd'
                         // Install requirements.txt within the virtual environment
                         sh 'sudo ./venv/bin/pip3 install -r requirements.txt'                    
                 }
