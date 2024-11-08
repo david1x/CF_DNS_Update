@@ -34,17 +34,17 @@ def get_public_ip():
     raise Exception(f"Request to get public ip has failed. status code {response.status_code}")
 
 def ip_changed(public_ip):
-    ip_from_env = os.environ.get(public_ip)
-    if ip_from_env == public_ip:
-        return False
-    return True
-    # with open("ip.txt", "r") as ip_file:
-    #     previous_ip = ip_file.readline()
-    #     print(f"Previous public IP address: {previous_ip}")
+    # ip_from_env = os.environ.get(public_ip)
+    # if ip_from_env == public_ip:
+    #     return False
+    # return True
+    with open("/home/david/ip.txt", "r") as ip_file:
+        previous_ip = ip_file.readline()
+        print(f"Previous public IP address: {previous_ip}")
         
-    #     if previous_ip == public_ip:
-    #         return False
-    #     return True
+        if previous_ip == public_ip:
+            return False
+        return True
 
 def get_record_id(record_name: str) -> list:
     headers = {
@@ -97,11 +97,12 @@ def main():
         t1_start = time.perf_counter()
         public_ip = get_public_ip()
         # set_env_variable('PUBLIC_IP', public_ip)
-        
+        print("public_ip",public_ip, sep=": ")
+
         if ip_changed(public_ip):
             set_env_variable('PUBLIC_IP', public_ip)
             t2_start = time.perf_counter()
-            with open("ip.txt", "w") as ip_file:
+            with open("/home/david/ip.txt", "w") as ip_file:
                 ip_file.write(public_ip)
             t2_stop = time.perf_counter()
             print("Elapsed time during the opening and closing ip file in seconds:",
