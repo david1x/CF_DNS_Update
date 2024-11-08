@@ -23,9 +23,9 @@ dns_records = os.getenv("RECORDS").split(" ")
 # use split if there are multiple records | exp. in .env - 'RECORD=contact about' | split output 'records = ['contact', 'about']'
 
 
-def set_env_variable(name, value):
-    with open('/etc/environment', 'w') as env_file:
-        env_file.write(f'{name}={value}\n')
+# def set_env_variable(name, value):
+#     with open('/etc/environment', 'w') as env_file:
+#         env_file.write(f'{name}={value}\n')
 
 def get_public_ip():
     response = requests.get("https://api64.ipify.org?format=json")
@@ -100,7 +100,7 @@ def main():
         print("public_ip",public_ip, sep=": ")
 
         if ip_changed(public_ip):
-            set_env_variable('PUBLIC_IP', public_ip)
+            # set_env_variable('PUBLIC_IP', public_ip)
             t2_start = time.perf_counter()
             with open("/home/david/ip.txt", "w") as ip_file:
                 ip_file.write(public_ip)
