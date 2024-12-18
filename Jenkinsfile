@@ -1,4 +1,4 @@
-properties([pipelineTriggers([cron('20 11,14,18 * * *')])])
+properties([pipelineTriggers([cron('H/30 * * * *')])])
 pipeline {
     agent { label 'deepin' }
 
@@ -7,6 +7,11 @@ pipeline {
         ZONE_ID = credentials('ZONE_ID')
         DOMAIN = credentials('DOMAIN')
         RECORDS = credentials('RECORDS')
+        DB_HOST = credentials("DB_HOST")
+        DB_USER = credentials("DB_USER")
+        DB_PASS = credentials("DB_PASS")
+        DB_NAME = credentials("DB_NAME")
+        DB_PORT = credentials("DB_PORT")
     }
 
     stages {

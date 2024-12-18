@@ -1,1 +1,4 @@
 .env
+/venv
+/.gitea
+/__pycache__
