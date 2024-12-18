@@ -30,7 +30,7 @@ pipeline {
                         
                         sh 'env | pwd'
                         // Activate the virtual environment
-                        sh 'source ./venv/bin/activate'
+                        sh './venv/bin/activate'
 
                         sh 'env | pwd'
                         // Install requirements.txt within the virtual environment
