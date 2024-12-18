@@ -24,16 +24,18 @@ pipeline {
                         if (!pipInstalled) {
                             sh 'sudo apt-get update && sudo apt-get install -y python3-pip'
                         }
-    
+                        sh 'env | pwd'
                         // Create a virtual environment in the TorrentHeadless directory
                         sh 'python3 -m venv venv'
-    
+                        
+                        sh 'env | pwd'
                         // Activate the virtual environment
-                        sh '. venv/bin/activate'
+                        sh 'source ./venv/bin/activate'
 
                         sh 'env | pwd'
                         // Install requirements.txt within the virtual environment
-                        sh 'sudo ./venv/bin/pip3 install -r requirements.txt'                    
+                        sh 'sudo ./venv/bin/pip3 install -r requirements.txt'
+                        sh 'env | pwd'                    
                 }
             }
         }
@@ -42,7 +44,8 @@ pipeline {
             steps {
                     script {
                         // Use double quotes to interpolate variables
-                        sh "python3 main.py"
+                        sh 'env | pwd'
+                        sh "./venv/bin/python3 main.py"
                     }
             }
         }
