@@ -74,7 +74,7 @@ class DBPOSTGRESQL:
             cursor = self.connection.cursor()
             cursor.execute(query, (public_ip,))
             self.connection.commit()
-            print(f"Updated previous_ip with {public_ip}.")
+            print(f"Updated previous_ip with {public_ip}.", end="\n")
             self.disconnect()
         except Exception as e:
             print(f"An error occurred: {e}")

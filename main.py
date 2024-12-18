@@ -117,7 +117,7 @@ def main():
                 
             t1_stop = time.perf_counter()
             
-            print("Updating Database with the Current Public IP")
+            print("\nUpdating Database with the Current Public IP")
             db.update_public_ip(public_ip=public_ip)
             
             print("Elapsed time:", t1_stop, t1_start) 
