@@ -41,7 +41,7 @@ class DBPOSTGRESQL:
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            print("Disconnected from the database")
+            print("Disconnected from the database\n")
     
     
     def get_previous_ip(self):
@@ -74,7 +74,7 @@ class DBPOSTGRESQL:
             cursor = self.connection.cursor()
             cursor.execute(query, (public_ip,))
             self.connection.commit()
-            print(f"Updated previous_ip with {public_ip}.", end="\n")
+            print(f"Updated Database with {public_ip}")
             self.disconnect()
         except Exception as e:
             print(f"An error occurred: {e}")
