@@ -120,7 +120,6 @@ def main():
             print("\nUpdating Database with the Current Public IP")
             db.update_public_ip(public_ip=public_ip)
             
-            print("Elapsed time:", t1_stop, t1_start) 
             print("Elapsed time during the whole program in seconds:",
                                                     t1_stop-t1_start)
         else:
