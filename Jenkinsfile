@@ -1,3 +1,4 @@
+def time
 properties([pipelineTriggers([cron('H/30 * * * *')])])
 pipeline {
     agent { label 'deepin' }
