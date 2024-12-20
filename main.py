@@ -110,11 +110,15 @@ def main():
         if not (previous_ip == public_ip):
             print("Public IP has changed - Updating Cloudflare\n")
             for record in dns_records:
-                record_id = get_record_id(record)
-                print(f"Found record with the name: {record}")
-
-                update_dns_record(record_id, public_ip, record)
-                
+                try:
+                    record_id = get_record_id(record)
+                    print(f"Found record with the name: {record}")
+                    update_dns_record(record_id, public_ip, record)
+                except Exception as e:
+                    print(e)
+                    print("Skipping to the next record")
+                finally:
+                    continue
             t1_stop = time.perf_counter()
             
             print("\nUpdating Database with the Current Public IP")
