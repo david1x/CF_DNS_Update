@@ -70,6 +70,9 @@ pipeline {
             }
         }
         stage('Run') {
+            when {
+                not { expression { exit_now } }
+            }
             steps {
                     script {
                         // Use double quotes to interpolate variables
@@ -79,6 +82,9 @@ pipeline {
             }
         }
         stage('Cleanup') {
+            when {
+                not { expression { exit_now } }
+            }
             steps {
                 deleteDir()
             }
