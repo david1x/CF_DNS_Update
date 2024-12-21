@@ -34,8 +34,8 @@ pipeline {
                     if (currentIp == previousIp) {
                         echo "Public IP has not changed. Skipping remaining stages."
                         currentBuild.result = 'SUCCESS'
-                        error("Exiting pipeline because IP has not changed.") // Exit pipeline gracefully
-                   
+                        // error("Exiting pipeline because IP has not changed.") // Exit pipeline gracefully
+                        return 
                     } else {
                         echo "Public IP has changed from ${previousIp} to ${currentIp}."
                         echo "Proceeding with the rest of the pipeline."
