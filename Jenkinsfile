@@ -39,6 +39,7 @@ pipeline {
                     } else {
                         echo "Public IP has changed from ${previousIp} to ${currentIp}."
                         echo "Proceeding with the rest of the pipeline."
+                        exit_now = false
                     }
                 }
             }
