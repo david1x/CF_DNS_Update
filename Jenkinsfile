@@ -34,8 +34,8 @@ pipeline {
                     if (currentIp == previousIp) {
                         echo "Public IP has not changed. Skipping remaining stages."
                         currentBuild.result = 'SUCCESS'
-                        // Exit pipeline
-                        return
+                        error("Exiting pipeline because IP has not changed.") // Exit pipeline gracefully
+                   
                     } else {
                         echo "Public IP has changed from ${previousIp} to ${currentIp}."
                         echo "Proceeding with the rest of the pipeline."
@@ -67,7 +67,6 @@ pipeline {
                 }
             }
         }
-
         stage('Run') {
             steps {
                     script {
@@ -77,7 +76,6 @@ pipeline {
                     }
             }
         }
-
         stage('Cleanup') {
             steps {
                 deleteDir()
