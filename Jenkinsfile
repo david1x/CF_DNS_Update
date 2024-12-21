@@ -26,7 +26,7 @@ pipeline {
                     // Query PostgreSQL to get the previous IP
                     def previousIp = sh(script: """
                         PGPASSWORD=${DB_PASS} psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t -c \
-                        "SELECT ip_address FROM public_ip ORDER BY updated_at DESC LIMIT 1;"
+                        "SELECT previous_ip FROM public_ip ORDER BY updated_at DESC LIMIT 1;"
                     """, returnStdout: true).trim()
                     echo "Previous public IP: ${previousIp}"
 
