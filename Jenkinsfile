@@ -33,9 +33,9 @@ pipeline {
                     // Compare the IPs
                     if (currentIp == previousIp) {
                         echo "Public IP has not changed. Skipping remaining stages."
+                        exit_now = true
                         currentBuild.result = 'SUCCESS'
-                        // error("Exiting pipeline because IP has not changed.") // Exit pipeline gracefully
-                        return 
+
                     } else {
                         echo "Public IP has changed from ${previousIp} to ${currentIp}."
                         echo "Proceeding with the rest of the pipeline."
@@ -44,7 +44,9 @@ pipeline {
             }
         }
         stage('Create Virtual Environment') {
-            
+            when {
+                not { expression { exit_now } }
+            }
             steps {
                 script {
                         // Install pip if not already installed
