@@ -1,5 +1,5 @@
 def time
-properties([pipelineTriggers([cron('H/30 * * * *')])])
+properties([pipelineTriggers([cron('H/10 * * * *')])])
 pipeline {
     agent { label 'deepin' }
 
@@ -16,8 +16,35 @@ pipeline {
     }
 
     stages {
-        
+        stage('Check Public IP') {
+            steps {
+                script {
+                    // Get current public IP
+                    def currentIp = sh(script: "curl -s https://api.ipify.org", returnStdout: true).trim()
+                    echo "Current public IP: ${currentIp}"
+
+                    // Query PostgreSQL to get the previous IP
+                    def previousIp = sh(script: """
+                        PGPASSWORD=${DB_PASS} psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t -c \
+                        "SELECT ip_address FROM ${IP_TABLE} ORDER BY updated_at DESC LIMIT 1;"
+                    """, returnStdout: true).trim()
+                    echo "Previous public IP: ${previousIp}"
+
+                    // Compare the IPs
+                    if (currentIp == previousIp) {
+                        echo "Public IP has not changed. Skipping remaining stages."
+                        currentBuild.result = 'SUCCESS'
+                        // Exit pipeline
+                        return
+                    } else {
+                        echo "Public IP has changed from ${previousIp} to ${currentIp}."
+                        echo "Proceeding with the rest of the pipeline."
+                    }
+                }
+            }
+        }
         stage('Create Virtual Environment') {
+            
             steps {
                 script {
                         // Install pip if not already installed
