@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from db import DBPOSTGRESQL
+from telegram import send_telegram_message
 import requests
 import time
 import json
@@ -16,7 +17,9 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
 DB_PORT = os.getenv("DB_PORT")
-
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TLG_ID = os.getenv("TLG_ID")
+ 
 
 # Cloudflare API token and zone_id
 api_token = API_TOKEN
@@ -123,6 +126,9 @@ def main():
             
             print("\nUpdating Database with the Current Public IP")
             db.update_public_ip(public_ip=public_ip)
+            # Telegram
+            message = f'IP Changed to {public_ip} |  Cloudflare Updated Successfully'
+            send_telegram_message(bot_token=BOT_TOKEN, chat_id=[TLG_ID], message=message)
             
             print("Elapsed time during the whole program in seconds:",
                                                     t1_stop-t1_start)
@@ -130,6 +136,9 @@ def main():
             print(f'Public ip ({public_ip}) has not changed, No update required.\nJenkins will retry in 30 minutes...')
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        # Telegram
+        message = f'Failed to Run Cloudflare Script. Error: {e}'
+        send_telegram_message(bot_token=BOT_TOKEN, chat_id=[TLG_ID], message=message)
         exit(1)            
             
 

@@ -13,6 +13,8 @@ pipeline {
         DB_PASS = credentials("DB_PASS")
         DB_NAME = credentials("DB_NAME")
         DB_PORT = credentials("DB_PORT")
+        TLG_ID = credentials("TLG_ID")
+        BOT_TOKEN = credentials("BOT_TOKEN")
     }
 
     stages {
