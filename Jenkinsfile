@@ -1,7 +1,26 @@
 def time
 properties([pipelineTriggers([cron('H/10 * * * *')])])
+
 pipeline {
-    agent { label 'deepin' }
+    agent none  // Default to no agent to allow pre-checks before assigning an agent
+
+    stages {
+        stage('Check Node') {
+            agent { label 'master' }  // Run on master to check agent status
+            steps {
+                script {
+                    def nodeOnline = jenkins.model.Jenkins.instance.getNode('deepin')?.toComputer()?.isOnline()
+                    if (!nodeOnline) {
+                        echo 'Node "deepin" is offline. Aborting pipeline.'
+                        currentBuild.result = 'ABORTED'
+                        error('Node is offline, stopping execution.')
+                    }
+                }
+            }
+        }
+    }
+
+    agent { label 'deepin' }  // Assign job to node after confirming it's online
 
     environment {
         API_TOKEN = credentials('API_TOKEN')
@@ -21,77 +40,50 @@ pipeline {
         stage('Check Public IP') {
             steps {
                 script {
-                    // Get current public IP
                     def currentIp = sh(script: "curl -s https://api.ipify.org", returnStdout: true).trim()
                     echo "Current public IP: ${currentIp}"
 
-                    // Query PostgreSQL to get the previous IP
                     def previousIp = sh(script: """
                         PGPASSWORD=${DB_PASS} psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t -c \
                         "SELECT previous_ip FROM public_ip LIMIT 1;"
                     """, returnStdout: true).trim()
                     echo "Previous public IP: ${previousIp}"
 
-                    // Compare the IPs
                     if (currentIp == previousIp) {
                         echo "Public IP has not changed. Skipping remaining stages."
-                        exit_now = true
                         currentBuild.result = 'SUCCESS'
-
+                        error('Skipping pipeline execution.')
                     } else {
                         echo "Public IP has changed from ${previousIp} to ${currentIp}."
-                        echo "Proceeding with the rest of the pipeline."
-                        exit_now = false
                     }
                 }
             }
         }
+
         stage('Create Virtual Environment') {
-            when {
-                not { expression { exit_now } }
-            }
             steps {
                 script {
-                        // Install pip if not already installed
-                        def pipInstalled = sh(script: 'command -v pip', returnStatus: true) == 0
-                        if (!pipInstalled) {
-                            sh 'sudo apt-get update && sudo apt-get install -y python3-pip'
-                        }
-                        sh 'env | pwd'
-                        // Create a virtual environment in the TorrentHeadless directory
-                        sh 'python3 -m venv venv'
-                        
-                        sh 'env | pwd'
-                        // Activate the virtual environment
-                        sh '. venv/bin/activate'
-
-                        sh 'env | pwd'
-                        // Install requirements.txt within the virtual environment
-                        sh 'sudo ./venv/bin/pip3 install -r requirements.txt'
-                        sh 'env | pwd'                    
+                    if (sh(script: 'command -v pip', returnStatus: true) != 0) {
+                        sh 'sudo apt-get update && sudo apt-get install -y python3-pip'
+                    }
+                    sh 'python3 -m venv venv'
+                    sh './venv/bin/pip3 install -r requirements.txt'
                 }
             }
         }
+
         stage('Run') {
-            when {
-                not { expression { exit_now } }
-            }
             steps {
-                    script {
-                        // Use double quotes to interpolate variables
-                        sh 'env | pwd'
-                        sh "./venv/bin/python3 main.py"
-                    }
+                script {
+                    sh './venv/bin/python3 main.py'
+                }
             }
         }
+
         stage('Cleanup') {
-            when {
-                not { expression { exit_now } }
-            }
             steps {
                 deleteDir()
             }
         }
     }
-
 }
