@@ -2,9 +2,12 @@ from dotenv import load_dotenv
 from db import DBPOSTGRESQL
 from telegram import send_telegram_message
 import requests
+import logging
 import time
 import json
 import os
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 
 load_dotenv()
 
@@ -69,7 +72,7 @@ def get_record_id(record_name: str) -> list:
 
     if response.status_code == 200:
         result = response.json()["result"]
-        # print(result)
+        # logging.info(result)
         if result:
             return result[0]["id"]
         else:
@@ -95,9 +98,9 @@ def update_dns_record(record_id, ip, record_name):
     response = requests.put(f"{cloud_api_url}/{record_id}", headers=headers, data=json.dumps(data))
 
     if response.status_code == 200:
-        print(f"DNS record [{record_name}] with ID {record_id} updated successfully.")
+        logging.info(f"DNS record [{record_name}] with ID {record_id} updated successfully.")
     else:
-        print(f"Error updating DNS record. Status code: {response.status_code}")
+        logging.error(f"Error updating DNS record. Status code: {response.status_code}")
         exit(1)
 
 
@@ -107,35 +110,35 @@ def main():
         public_ip = get_public_ip()
         previous_ip = db.get_previous_ip()
         
-        print("public_ip",public_ip, sep=": ")
-        print("previous_ip",previous_ip, sep=": ")
+        logging.info(f"public_ip: {public_ip}")
+        logging.info(f"previous_ip: {previous_ip}")
         
         if not (previous_ip == public_ip):
-            print("Public IP has changed - Updating Cloudflare\n")
+            logging.info("Public IP has changed - Updating Cloudflare\n")
             for record in dns_records:
                 try:
                     record_id = get_record_id(record)
-                    print(f"Found record with the name: {record}")
+                    logging.info(f"Found record with the name: {record}")
                     update_dns_record(record_id, public_ip, record)
                 except Exception as e:
-                    print(e)
-                    print("Skipping to the next record")
+                    logging.error(e)
+                    logging.debug("Skipping to the next record")
                 finally:
                     continue
             t1_stop = time.perf_counter()
             
-            print("\nUpdating Database with the Current Public IP")
+            logging.info("\nUpdating Database with the Current Public IP")
             db.update_public_ip(public_ip=public_ip)
             # Telegram
             message = f'IP Changed to {public_ip} |  Cloudflare Updated Successfully'
             send_telegram_message(bot_token=BOT_TOKEN, chat_id=[TLG_ID], message=message)
             
-            print("Elapsed time during the whole program in seconds:",
+            logging.info("Elapsed time during the whole program in seconds:",
                                                     t1_stop-t1_start)
         else:
-            print(f'Public ip ({public_ip}) has not changed, No update required.\nJenkins will retry in 30 minutes...')
+            logging.info(f'Public ip ({public_ip}) has not changed, No update required.\n')
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        logging.error(f"An error occurred: {str(e)}")
         # Telegram
         message = f'Failed to Run Cloudflare Script. Error: {e}'
         send_telegram_message(bot_token=BOT_TOKEN, chat_id=[TLG_ID], message=message)

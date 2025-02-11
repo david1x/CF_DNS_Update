@@ -1,4 +1,5 @@
 import requests
+import logging
 
 def send_telegram_message(bot_token: str, chat_id: list, message: str):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -9,6 +10,6 @@ def send_telegram_message(bot_token: str, chat_id: list, message: str):
         }
         response = requests.post(url, json=payload)
         if response.status_code == 200:
-            print("TELEGRAM: Message sent successfully!")
+            logging.info("TELEGRAM: Message sent successfully!")
         else:
-            print(f"TELEGRAM: Failed to send message: {response.text}")
+            logging.error(f"TELEGRAM: Failed to send message: {response.text}")
